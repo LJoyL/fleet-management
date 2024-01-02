@@ -1,8 +1,9 @@
-[submodule "remoteAgent/include/websocketpp"]
-	path = remoteAgent/include/websocketpp
+[submodule "client/include/websocketpp"]
+	path = client/include/websocketpp
 	url = git@github.com:zaphoyd/websocketpp.git
-[submodule "remoteAgent/include/json"]
-	path = remoteAgent/include/json
+[submodule "client/include/json"]
+	path = client/include/json
 	url = git@github.com:nlohmann/json.git
-[submodule "remoteAgent/include/HTTPRequest"]
-	path = remoteAgent/include/HTTPRequest
+[submodule "client/include/HTTPRequest"]
+	path = client/include/HTTPRequest
+	url = git@github.com:elnormous/HTTPRequest.git
