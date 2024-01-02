@@ -34,13 +34,24 @@ async fn main() -> Result<()> {
             input.pop();
         }
 
-        // print inputed text
-        println!("{}", input);
-
         if input.starts_with('q') {
+            // exit
             break;
         } else if input.starts_with('s') {
-            fetch_json(url.clone()).await?;
+            if input.len() > 1 {
+                let mut input_split = input.split_whitespace();
+                let _ = input_split.next();
+                let message = input_split.next().unwrap_or("");
+                let delay = input_split.next().unwrap_or("");
+                let delay = delay.parse::<i32>().unwrap_or(0);
+
+                // send request
+                send_request_command(url.clone(), String::from(message), delay).await?;
+            }
+            // send request
+            else {
+                send_request_command(url.clone(), String::from("Happy New Year!"), 0).await?;
+            }
         }
 
         input.clear();
@@ -52,7 +63,7 @@ async fn main() -> Result<()> {
     Ok(())
 }
 
-async fn fetch_json(url: hyper::Uri) -> Result<()> {
+async fn send_request_command(url: hyper::Uri, message: String, delay: i32) -> Result<()> {
     let host = url.host().expect("uri has no host");
     let port = url.port_u16().unwrap_or(80);
     let addr = format!("{}:{}", host, port);
@@ -67,29 +78,39 @@ async fn fetch_json(url: hyper::Uri) -> Result<()> {
         }
     });
 
-    let authority = url.authority().unwrap().clone();
+    // for encryped connection
+    // let authority = url.authority().unwrap().clone();
 
     // Creating body in a json
-    let body = r#"{
-        "topic": "default",
-        "message": "Happy New Year!"
-    }"#;
+    let mut body = format!(
+        r#"{{"topic": "default", 
+            "message": {{ 
+                "text": "{}"
+            }}
+        }}"#,
+        message
+    );
 
-    // Fetch the url...
+    if delay > 0 {
+        body = format!(
+            r#"{{"topic": "default", 
+                "message": {{ 
+                    "text": "{}",
+                    "delay": {}
+                }}
+            }}"#,
+            message, delay
+        );
+    }
+
     let req = Request::post(url)
         .header(hyper::header::CONTENT_TYPE, "application/json")
         .body(Full::new(Bytes::from(body)))
         .unwrap();
 
-    let res = sender.send_request(req).await?;
+    let _res = sender.send_request(req).await?;
 
-    // Stream the body, writing each frame to stdout as it arrives
-    // while let Some(next) = res.frame().await {
-    //     let frame = next?;
-    //     if let Some(chunk) = frame.data_ref() {
-    //         io::stdout().write_all(&chunk).await?;
-    //     }
-    // }
+    // Todo: handle response
 
     Ok(())
 }

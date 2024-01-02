@@ -15,20 +15,23 @@ using namespace fleet_management::agent;
 
 int main(int argc, char *argv[])
 {
-    int id = 1;
+    int num = 10;
     std::string url = "http://localhost:8000";
 
     if (argc == 2)
     {
-        id = std::stoi(argv[1]);
+        num = std::stoi(argv[1]);
+
+        if (num < 1)
+        {
+            throw std::invalid_argument("Number of agents must be greater than 0");
+        }
     }
     try
     {
-        // CommandAgent agent(url, id);
-
         // Create fleet of agents
         std::deque<CommandAgent> fleet;
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < num; i++)
         {
             fleet.emplace_back(url, i);
         }

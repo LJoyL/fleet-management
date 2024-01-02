@@ -24,7 +24,7 @@ pub struct RegisterResponse {
 pub struct Event {
     topic: String,
     user_id: Option<usize>,
-    message: String,
+    message: serde_json::Value,
 }
 
 pub async fn publish_handler(body: Event, clients: Clients) -> Result<impl Reply> {
@@ -39,7 +39,7 @@ pub async fn publish_handler(body: Event, clients: Clients) -> Result<impl Reply
         .filter(|(_, client)| client.topics.contains(&body.topic))
         .for_each(|(_, client)| {
             if let Some(sender) = &client.sender {
-                let _ = sender.send(Ok(Message::text(body.message.clone())));
+                let _ = sender.send(Ok(Message::text(body.message.to_string())));
             }
         });
 

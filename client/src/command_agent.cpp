@@ -14,6 +14,13 @@ namespace fleet_management::agent
                   << " and message: " << msg->get_payload()
                   << std::endl;
 
+        // Check if message is valid json
+        if (msg->get_payload().empty() || !json::accept(msg->get_payload()))
+        {
+            std::cout << "Invalid json received or empty" << std::endl;
+            return;
+        }
+
         // parse message into json
         json j = json::parse(msg->get_payload());
 
