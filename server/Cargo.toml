@@ -1,0 +1,2 @@
+[workspace]
+members = ["command_service", "fleet_manager_service", "shared"]
