@@ -8,7 +8,7 @@
 namespace fleet_management::agent
 {
 
-    AgentAbstract::AgentAbstract(std::function<void(client *c, websocketpp::connection_hdl hdl, message_ptr msg)> onMessageFct, std::string const &server_address, int id, std::string const &type, std::string const &name, std::string const &desc)
+    AgentAbstract::AgentAbstract(std::function<void(AgentAbstract *agent, client *c, websocketpp::connection_hdl hdl, message_ptr msg)> onMessageFct, std::string const &server_address, int id, std::string const &type, std::string const &name, std::string const &desc)
         : m_server_address(server_address),
           m_agent_id(id),
           m_agent_type(type),
@@ -28,7 +28,7 @@ namespace fleet_management::agent
                 m_c.init_asio();
 
                 // Register our message handler
-                m_c.set_message_handler(bind(onMessageFct, &m_c, websocketpp::lib::placeholders::_1, websocketpp::lib::placeholders::_2));
+                m_c.set_message_handler(bind(onMessageFct, this, &m_c, websocketpp::lib::placeholders::_1, websocketpp::lib::placeholders::_2));
 
                 websocketpp::lib::error_code ec;
                 client::connection_ptr con = m_c.get_connection(ws_url, ec);

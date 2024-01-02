@@ -20,8 +20,10 @@ namespace fleet_management::agent
     public:
         CommandAgent(std::string &server_address, int id) : AgentAbstract(CommandAgent::onMessage, server_address, id){};
         ~CommandAgent() = default;
+        CommandAgent(const CommandAgent &) = delete;
+        CommandAgent(CommandAgent &&) = default;
 
-        static void onMessage(client *c, websocketpp::connection_hdl hdl, message_ptr msg);
+        static void onMessage(AgentAbstract *agent, client *c, websocketpp::connection_hdl hdl, message_ptr msg);
     };
 
 } // namespace fleet_management::agent

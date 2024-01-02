@@ -9,6 +9,7 @@ set(SOURCE_FILES
 
 set(APPS
     commandAgentApp.cxx
+    multiCommandAgentApp.cxx
 )
 
 set(TEST_APPS
