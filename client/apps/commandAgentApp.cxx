@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     }
     try
     {
-        CommandAgent agent(url, id);
+        CommandAgent agent(url, id, true);
         agent.run();
     }
     catch (const std::exception &e)

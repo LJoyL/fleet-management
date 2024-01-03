@@ -40,8 +40,11 @@ namespace fleet_management::agent
         client m_c;
         bool m_registered = false;
 
+        bool m_debug = false;
+
         AgentAbstract(std::function<void(AgentAbstract *agent, client *c, websocketpp::connection_hdl hdl, message_ptr msg)> onMessageFct,
                       std::string const &server_address, int id,
+                      bool debug = false,
                       std::string const &type = std::string("default_type"),
                       std::string const &name = std::string("dummy"),
                       std::string const &desc = std::string());

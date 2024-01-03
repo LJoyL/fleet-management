@@ -10,9 +10,12 @@ namespace fleet_management::agent
 
     void CommandAgent::onMessage(AgentAbstract *agent, client *c, websocketpp::connection_hdl hdl, message_ptr msg)
     {
-        std::cout << "on_message called with hdl: " << hdl.lock().get()
-                  << " and message: " << msg->get_payload()
-                  << std::endl;
+        if (agent->m_debug)
+        {
+            std::cout << "on_message called with hdl: " << hdl.lock().get()
+                      << " and message: " << msg->get_payload()
+                      << std::endl;
+        }
 
         // Check if message is valid json
         if (msg->get_payload().empty() || !json::accept(msg->get_payload()))

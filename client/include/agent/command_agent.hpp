@@ -18,7 +18,7 @@ namespace fleet_management::agent
     {
 
     public:
-        CommandAgent(std::string &server_address, int id) : AgentAbstract(CommandAgent::onMessage, server_address, id){};
+        CommandAgent(std::string &server_address, int id, bool debug = false) : AgentAbstract(CommandAgent::onMessage, server_address, id, debug){};
         ~CommandAgent() = default;
         CommandAgent(const CommandAgent &) = delete;
         CommandAgent(CommandAgent &&) = default;

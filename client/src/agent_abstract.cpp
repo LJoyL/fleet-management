@@ -8,20 +8,29 @@
 namespace fleet_management::agent
 {
 
-    AgentAbstract::AgentAbstract(std::function<void(AgentAbstract *agent, client *c, websocketpp::connection_hdl hdl, message_ptr msg)> onMessageFct, std::string const &server_address, int id, std::string const &type, std::string const &name, std::string const &desc)
+    AgentAbstract::AgentAbstract(std::function<void(AgentAbstract *agent, client *c, websocketpp::connection_hdl hdl, message_ptr msg)> onMessageFct, std::string const &server_address, int id, bool debug, std::string const &type, std::string const &name, std::string const &desc)
         : m_server_address(server_address),
           m_agent_id(id),
           m_agent_type(type),
           m_agent_name(name),
-          m_agent_description(desc)
+          m_agent_description(desc),
+          m_debug(debug)
     {
         std::string ws_url;
         if (registerToServer(m_server_address, ws_url))
         {
             try
             {
-                // Set logging to be pretty verbose (everything except message payloads)
-                m_c.set_access_channels(websocketpp::log::alevel::all);
+                if (m_debug)
+                {
+                    std::cout << "Connecting to " << ws_url << std::endl;
+                    // Set logging to be pretty verbose (everything except message payloads)
+                    m_c.set_access_channels(websocketpp::log::alevel::all);
+                }
+                else
+                {
+                    m_c.set_access_channels(websocketpp::log::alevel::none);
+                }
                 m_c.clear_access_channels(websocketpp::log::alevel::frame_payload);
 
                 // Initialize ASIO
