@@ -1,5 +1,5 @@
 [package]
-name = "fleet_management_test_service"
+name = "command_service"
 version = "0.1.0"
 edition = "2021"
 

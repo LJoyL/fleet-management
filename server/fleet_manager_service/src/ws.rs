@@ -1,26 +1,26 @@
-use crate::{Client, Clients};
+use crate::{Agent, Agents};
 use futures::{FutureExt, StreamExt};
 use tokio::sync::mpsc;
 use tokio_stream::wrappers::UnboundedReceiverStream;
 use warp::ws::{Message, WebSocket};
 
-pub async fn client_connection(ws: WebSocket, id: String, clients: Clients, mut client: Client) {
-    let (client_ws_sender, mut client_ws_rcv) = ws.split();
-    let (client_sender, client_rcv) = mpsc::unbounded_channel();
+pub async fn agent_connection(ws: WebSocket, id: String, agents: Agents, mut agent: Agent) {
+    let (agent_ws_sender, mut agent_ws_rcv) = ws.split();
+    let (agent_sender, agent_rcv) = mpsc::unbounded_channel();
 
-    let client_rcv = UnboundedReceiverStream::new(client_rcv);
-    tokio::task::spawn(client_rcv.forward(client_ws_sender).map(|result| {
+    let agent_rcv = UnboundedReceiverStream::new(agent_rcv);
+    tokio::task::spawn(agent_rcv.forward(agent_ws_sender).map(|result| {
         if let Err(e) = result {
             eprintln!("error sending websocket msg: {}", e);
         }
     }));
 
-    client.sender = Some(client_sender);
-    clients.write().await.insert(id.clone(), client);
+    agent.sender = Some(agent_sender);
+    agents.write().await.insert(id.clone(), agent);
 
     println!("{} connected", id);
 
-    while let Some(result) = client_ws_rcv.next().await {
+    while let Some(result) = agent_ws_rcv.next().await {
         let msg = match result {
             Ok(msg) => msg,
             Err(e) => {
@@ -28,13 +28,13 @@ pub async fn client_connection(ws: WebSocket, id: String, clients: Clients, mut 
                 break;
             }
         };
-        client_msg(&id, msg, &clients).await;
+        agent_msg(&id, msg, &agents).await;
     }
 
-    clients.write().await.remove(&id);
+    agents.write().await.remove(&id);
     println!("{} disconnected", id);
 }
 
-async fn client_msg(id: &str, msg: Message, clients: &Clients) {
+async fn agent_msg(id: &str, msg: Message, _agents: &Agents) {
     println!("received message from {}: {:?}", id, msg);
 }
